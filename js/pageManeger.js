@@ -3,7 +3,7 @@ class PageManager {
     _pageData = null;
     _totalPages = null;
     _paginationEvent = null;
-    renderData() {
+    renderData(propsArr) {
         const row = document.createElement("div");
         row.id = "data";
         if (length in this._pageData) {
@@ -11,6 +11,7 @@ class PageManager {
                 const div = document.createElement("div");
                 const fullName = document.createElement("p");
                 const avatar = document.createElement("img");
+                console.log(element)
                 fullName.innerHTML = `${element.first_name} ${element.last_name}`;
                 avatar.src = element.avatar;
                 div.appendChild(avatar);
