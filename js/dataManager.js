@@ -14,7 +14,7 @@ class DataManager {
   loadFrom = (url) => {
     this._dataUrl = url;
   };
-  getPaginableData = async (page = 1) => {
+  getPaginatableData = async (page = 1) => {
     try {
         return await this.request(
           `${this._dataUrl}?page=${page}&per_page=${this._itemsPerPage}`

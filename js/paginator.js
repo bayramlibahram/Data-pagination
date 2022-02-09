@@ -27,9 +27,10 @@ class Paginator {
         dataManager.loadFrom(this.dataSource);
         dataManager.itemsPerPage = this._itemsPerPage;
         pageManager.container = "root";
-        pageManager.manage = await dataManager.getPaginableData(1);
+        pageManager.manage = await dataManager.getPaginatableData(1);
         pageManager.renderData();
-        pageManager.paginationEvent = dataManager.getPaginableData;
+        pageManager.managePagination(1);
+        pageManager.paginationEvent = dataManager.getPaginatableData;
         pageManager.renderPagination();
     }
 }
