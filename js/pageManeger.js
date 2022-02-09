@@ -1,4 +1,5 @@
 class PageManager {
+    _dom = null
     _root = null;
     _pageData = null;
     _totalPages = null;
@@ -7,6 +8,14 @@ class PageManager {
     _pageSize = 4;
     _startIndex = null;
     _endIndex = null;
+
+    set dom(dom) {
+        this._dom = dom;
+    }
+
+    get dom() {
+        return this._dom;
+    }
 
     set manage(data) {
         this._pageData = data.data;
@@ -31,68 +40,64 @@ class PageManager {
         row.id = "data";
         if (length in this._pageData) {
             for (let element of this._pageData) {
-                const div = document.createElement("div");
-                const fullName = document.createElement("p");
-                const avatar = document.createElement("img");
-                fullName.innerHTML = `${element.first_name} ${element.last_name}`;
-                avatar.src = element.avatar;
-                div.appendChild(avatar);
-                div.appendChild(fullName);
-                row.appendChild(div);
+                const div = this.dom.createElement("div");
+                const fullName = this.dom.createElement("p", {
+                    innerHTML: `${element.first_name} ${element.last_name}`,
+                });
+                const avatar = this.dom.createElement("img", {src: element.avatar});
+                this.dom.appendByMultiple(div, [avatar, fullName]);
+                this.dom.appendByElement(row, div);
+
             }
-            const rootElement = document.getElementById("root");
-            rootElement.appendChild(row);
+            const rootElement = this.dom.getById("root");
+            this.dom.appendByElement(rootElement, row);
         }
     }
 
-    managePagination(start){
-        this._startIndex = (start-1) * this._pageSize;
+    managePagination(start = 1) {
+        this._startIndex = (start - 1) * this._pageSize;
         this._endIndex = start * this._pageSize;
     }
 
     renderPagination() {
 
-        const pageContainer = document.createElement("ul");
-        const div = document.getElementById("pagination");
-        pageContainer.className="pagination";
+        const pageContainer = this.dom.createElement("ul", {
+            cls: "pagination"
+        });
 
-        const prev = document.createElement("li");
-        const next = document.createElement("li");
-        const linkPrev = document.createElement("a");
-        const linkNext = document.createElement("a");
+        const div = this.dom.getById("pagination");
 
-        linkPrev.innerText = "prev";
-        linkNext.innerText = "next";
-
-        prev.className = "page-item";
-        next.className = "page-item"
-
-        linkPrev.className = "page-link";
-        linkNext.className = "page-link";
-
-        linkPrev.href = "#";
-        linkNext.href = "#";
+        const prev = this.dom.createElement("li", {cls: "page-item"});
+        const next = this.dom.createElement("li", {cls: "page-item"});
+        const linkPrev = this.dom.createElement("a", {
+            cls: "page-link",
+            innerText: "prev",
+            href: "#"
+        });
+        const linkNext = this.dom.createElement("a", {
+            cls: "page-link",
+            innerText: "next",
+            href: "#"
+        });
 
         prev.addEventListener("click", async () => await this.pageManipulation("prev"));
         next.addEventListener("click", async () => await this.pageManipulation("next"));
 
-
-        prev.appendChild(linkPrev);
-        next.appendChild(linkNext);
-        pageContainer.appendChild(prev);
+        this.dom.appendByElement(prev, linkPrev)
+        this.dom.appendByElement(next, linkNext)
+        this.dom.appendByElement(pageContainer, prev);
 
         const arr = this._totalPages.slice(this._startIndex, this._endIndex);
 
-        for (let f = 0; f <arr.length; f++) {
+        for (let f = 0; f < arr.length; f++) {
 
-            const listItem = document.createElement("li");
-            const listItemLink = document.createElement("a");
-            listItem.className = "page-item";
-            listItemLink.className = "page-link";
+            const listItem = this.dom.createElement("li", {cls: "page-item"});
+            const listItemLink = this.dom.createElement("a", {
+                cls: "page-link",
+                innerText: arr[f],
+                href: "#"
+            });
 
-
-            listItemLink.innerText = arr[f];
-            listItemLink.href ="#";
             if (f === 0) {
                 listItem.className = "page-item active"
             }
@@ -104,19 +109,18 @@ class PageManager {
                     document.getElementById("data").remove();
                     this.manage = await this.paginationEvent(listItemLink.innerText);
                     this.renderData();
-                }
-                catch (error) {
+                } catch (error) {
                     console.log(error);
                 }
             });
 
-            listItem.appendChild(listItemLink);
-            pageContainer.appendChild(listItem);
+            this.dom.appendByElement(listItem, listItemLink);
+            this.dom.appendByElement(pageContainer, listItem);
+
         }
 
-        pageContainer.appendChild(next);
-
-        div.appendChild(pageContainer);
+        this.dom.appendByElement(pageContainer, next);
+        this.dom.appendByElement(div, pageContainer);
     }
 
     pageManipulation = async (button) => {
@@ -132,8 +136,7 @@ class PageManager {
 
                         if (this._endIndex > this._currentPage) {
                             this._endIndex = this._totalPages;
-                        }
-                        else {
+                        } else {
                             this._endIndex = this._endIndex + this._pageSize;
                         }
 
@@ -162,7 +165,7 @@ class PageManager {
                     if (this._currentPage <= 1) return;
                     this.manage = await this.paginationEvent(parseInt(this._currentPage - 1));
                     document.getElementById("data").remove();
-                    if(this._startIndex>= this._currentPage) {
+                    if (this._startIndex >= this._currentPage) {
                         document.getElementById("pagination").innerHTML = "";
                         this._endIndex = this._currentPage;
                         this._startIndex = this._currentPage - this._pageSize;

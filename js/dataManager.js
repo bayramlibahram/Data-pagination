@@ -1,6 +1,6 @@
 class DataManager {
   _itemsPerPage = 5;
-  static _dataUrl = null;
+  _dataUrl = null;
   request = async (url, method = "GET") => {
     try {
       const response = await fetch(url, {
