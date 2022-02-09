@@ -4,13 +4,13 @@ class PageManager {
     _totalPages = null;
     _currentPage = null;
     _paginationEvent = null;
-    _pageSize = 5;
+    _pageSize = 4;
     _startIndex = null;
     _endIndex = null;
 
     set manage(data) {
         this._pageData = data.data;
-        this._totalPages = [...this.intgToArr(data.total_pages)];
+        this._totalPages = [...this.numToArray(data.total_pages)];
         this._currentPage = data.page;
     }
 
@@ -52,38 +52,57 @@ class PageManager {
 
     renderPagination() {
 
-        const pageContainer = document.createElement("div");
+        const pageContainer = document.createElement("ul");
         const div = document.getElementById("pagination");
+        pageContainer.className="pagination";
 
-        const prev = document.createElement("button");
-        const next = document.createElement("button");
+        const prev = document.createElement("li");
+        const next = document.createElement("li");
+        const linkPrev = document.createElement("a");
+        const linkNext = document.createElement("a");
 
-        prev.innerText = "prev";
-        next.innerText = "next";
+        linkPrev.innerText = "prev";
+        linkNext.innerText = "next";
+
+        prev.className = "page-item";
+        next.className = "page-item"
+
+        linkPrev.className = "page-link";
+        linkNext.className = "page-link";
+
+        linkPrev.href = "#";
+        linkNext.href = "#";
 
         prev.addEventListener("click", async () => await this.pageManipulation("prev"));
         next.addEventListener("click", async () => await this.pageManipulation("next"));
 
+
+        prev.appendChild(linkPrev);
+        next.appendChild(linkNext);
         pageContainer.appendChild(prev);
 
         const arr = this._totalPages.slice(this._startIndex, this._endIndex);
 
         for (let f = 0; f <arr.length; f++) {
 
-            const button = document.createElement("button");
-            button.innerText = arr[f];
-            button.className = "page";
+            const listItem = document.createElement("li");
+            const listItemLink = document.createElement("a");
+            listItem.className = "page-item";
+            listItemLink.className = "page-link";
 
+
+            listItemLink.innerText = arr[f];
+            listItemLink.href ="#";
             if (f === 0) {
-                button.className = "page current-page"
+                listItem.className = "page-item active"
             }
 
-            button.addEventListener("click", async () => {
-                document.querySelectorAll('.current-page').forEach((el) => el.className = "page"); //remove class name from last page
-                button.className = "page current-page";
+            listItem.addEventListener("click", async () => {
+                document.querySelectorAll('.active').forEach((el) => el.className = "page-item"); //remove class name from last page
+                listItem.className = "page-item active";
                 try {
                     document.getElementById("data").remove();
-                    this.manage = await this.paginationEvent(button.innerText);
+                    this.manage = await this.paginationEvent(listItemLink.innerText);
                     this.renderData();
                 }
                 catch (error) {
@@ -91,7 +110,8 @@ class PageManager {
                 }
             });
 
-            pageContainer.appendChild(button);
+            listItem.appendChild(listItemLink);
+            pageContainer.appendChild(listItem);
         }
 
         pageContainer.appendChild(next);
@@ -122,13 +142,13 @@ class PageManager {
                     document.getElementById("data").remove();// remove the old data from container for the new one
                     this.manage = await this.paginationEvent(parseInt(this._currentPage) + 1);
                     this.renderData();
-                    document.querySelectorAll(".page").forEach(item => {
+                    document.querySelectorAll(".page-item").forEach(item => {
                         if (item.innerText === this._currentPage.toString()) {
-                            item.className = "page current-page"
+                            item.className = "page-item active"
                         } else if (item.innerText !== this._currentPage.toString()) {
-                            item.className = "page"
+                            item.className = "page-item"
                         } else {
-                            item.className = "page"
+                            item.className = "page-item"
                         }
                     });
 
@@ -138,7 +158,6 @@ class PageManager {
                 return;
             }
             case "prev": {
-
                 try {
                     if (this._currentPage <= 1) return;
                     this.manage = await this.paginationEvent(parseInt(this._currentPage - 1));
@@ -155,13 +174,13 @@ class PageManager {
 
 
                     this.renderData();
-                    document.querySelectorAll(".page").forEach(item => {
+                    document.querySelectorAll(".page-item").forEach(item => {
                         if (item.innerText === this._currentPage.toString()) {
-                            item.className = "page current-page"
+                            item.className = "page-item active"
                         } else if (item.innerText !== this._currentPage.toString()) {
-                            item.className = "page"
+                            item.className = "page-item"
                         } else {
-                            item.className = "page"
+                            item.className = "page-item"
                         }
                     });
                 } catch (error) {
@@ -171,7 +190,7 @@ class PageManager {
         }
     }
 
-    intgToArr = (number) => {
+    numToArray = (number) => {
         const arr = [];
         for (let f = 1; f <= number; f++) {
             arr.push(f);
