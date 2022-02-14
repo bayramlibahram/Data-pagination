@@ -1,3 +1,25 @@
+class DataItem {
+    constructor(dom, element) {
+        this._element = element
+        this._dom = dom;
+    }
+    get element() {
+        return this._element;
+    }
+    get dom (){
+        return this._dom;
+    }
+    createItem(){
+        const div = this.dom.createElement("div");
+        const fullName = this.dom.createElement("p", {
+            html: `${this.element.first_name} ${this.element.last_name}`,
+        });
+        const avatar = this.dom.createElement("img", {src: this.element.avatar});
+        this.dom.appendByMultiple(div, [avatar, fullName]);
+        return div;
+    }
+}
+
 class PageManager {
     _dom = null
     _root = null;
@@ -36,21 +58,16 @@ class PageManager {
     }
 
     renderData() {
-        const row = document.createElement("div");
-        row.id = "data";
+        const container = this.dom.createElement("div", {id: "container"});
+        const row = this.dom.createElement("div", {id: "row"});
         if (length in this._pageData) {
             for (let element of this._pageData) {
-                const div = this.dom.createElement("div");
-                const fullName = this.dom.createElement("p", {
-                    innerHTML: `${element.first_name} ${element.last_name}`,
-                });
-                const avatar = this.dom.createElement("img", {src: element.avatar});
-                this.dom.appendByMultiple(div, [avatar, fullName]);
-                this.dom.appendByElement(row, div);
-
+                const newElement = new DataItem(this.dom, element).createItem();
+                this.dom.appendByElement(row, newElement);
+                this.dom.appendByElement(container, row);
             }
             const rootElement = this.dom.getById("root");
-            this.dom.appendByElement(rootElement, row);
+            this.dom.appendByElement(rootElement, container);
         }
     }
 
@@ -106,7 +123,7 @@ class PageManager {
                 document.querySelectorAll('.active').forEach((el) => el.className = "page-item"); //remove class name from last page
                 listItem.className = "page-item active";
                 try {
-                    document.getElementById("data").remove();
+                    document.getElementById("container").remove();
                     this.manage = await this.paginationEvent(listItemLink.innerText);
                     this.renderData();
                 } catch (error) {
@@ -142,7 +159,7 @@ class PageManager {
 
                         this.renderPagination();
                     }
-                    document.getElementById("data").remove();// remove the old data from container for the new one
+                    document.getElementById("container").remove();// remove the old data from container for the new one
                     this.manage = await this.paginationEvent(parseInt(this._currentPage) + 1);
                     this.renderData();
                     document.querySelectorAll(".page-item").forEach(item => {
@@ -164,7 +181,7 @@ class PageManager {
                 try {
                     if (this._currentPage <= 1) return;
                     this.manage = await this.paginationEvent(parseInt(this._currentPage - 1));
-                    document.getElementById("data").remove();
+                    document.getElementById("container").remove();
                     if (this._startIndex >= this._currentPage) {
                         document.getElementById("pagination").innerHTML = "";
                         this._endIndex = this._currentPage;

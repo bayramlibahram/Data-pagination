@@ -11,21 +11,25 @@ class Paginator {
         this._itemsPerPage = itemsPerPage;
         this._rootFolder = rootFolder;
     }
-
+    get rootFolder (){
+        return this._rootFolder;
+    }
+    get itemsPerPage(){
+        return this._itemsPerPage;
+    }
     get dataSource() {
         return this._dataSource;
     }
-
     set dataSource(dataSource) {
         this._dataSource = dataSource;
     }
-
     async init() {
         dataManager.loadFrom(this.dataSource);
-        dataManager.itemsPerPage = this._itemsPerPage;
-        pageManager.container = "root";
+        dataManager.itemsPerPage = this.itemsPerPage;
+
+        pageManager.container = this.rootFolder;
         pageManager.dom = dom;
-        pageManager.manage = await dataManager.getPaginatableData(1);
+        pageManager.manage = await dataManager.getPaginatableData();
         pageManager.renderData();
         pageManager.managePagination();
         pageManager.paginationEvent = dataManager.getPaginatableData;
