@@ -67,7 +67,7 @@ class PageManager {
     }
 
     renderData() {
-        const container = this.dom.createElement("div", {id: "container"});
+        const container = this.dom.createElement("div", {id: this.dataContainer});
         const row = this.dom.createElement("div", {id: "row"});
         if (length in this._pageData) {
             for (let element of this._pageData) {
@@ -132,7 +132,7 @@ class PageManager {
                 document.querySelectorAll('.active').forEach((el) => el.className = "page-item"); //remove class name from last page
                 listItem.className = "page-item active";
                 try {
-                    document.getElementById("container").remove();
+                    document.getElementById(this.dataContainer).remove();
                     this.manage = await this.paginationEvent(listItemLink.innerText);
                     this.renderData();
                 } catch (error) {
@@ -168,7 +168,7 @@ class PageManager {
 
                         this.renderPagination();
                     }
-                    document.getElementById("container").remove();// remove the old data from container for the new one
+                    document.getElementById(this.dataContainer).remove();// remove the old data from container for the new one
                     this.manage = await this.paginationEvent(parseInt(this._currentPage) + 1);
                     this.renderData();
                     document.querySelectorAll(".page-item").forEach(item => {
@@ -190,7 +190,7 @@ class PageManager {
                 try {
                     if (this._currentPage <= 1) return;
                     this.manage = await this.paginationEvent(parseInt(this._currentPage - 1));
-                    document.getElementById("container").remove();
+                    document.getElementById(this.dataContainer).remove();
                     if (this._startIndex >= this._currentPage) {
                         document.getElementById("pagination").innerHTML = "";
                         this._endIndex = this._currentPage;
