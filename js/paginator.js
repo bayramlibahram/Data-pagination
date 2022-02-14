@@ -6,13 +6,17 @@ const dataManager = new DataManager();
 const pageManager = new PageManager();
 
 class Paginator {
-    constructor(dataSource, itemsPerPage, rootFolder) {
+    constructor(dataSource, itemsPerPage, mainContainer, dataContainer) {
         this._dataSource = dataSource;
         this._itemsPerPage = itemsPerPage;
-        this._rootFolder = rootFolder;
+        this._mainContainer = mainContainer;
+        this._dataContainer = dataContainer;
     }
-    get rootFolder (){
-        return this._rootFolder;
+    get mainContainer (){
+        return this._mainContainer;
+    }
+    get dataContainer() {
+        return this._dataContainer;
     }
     get itemsPerPage(){
         return this._itemsPerPage;
@@ -26,8 +30,8 @@ class Paginator {
     async init() {
         dataManager.loadFrom(this.dataSource);
         dataManager.itemsPerPage = this.itemsPerPage;
-
-        pageManager.container = this.rootFolder;
+        pageManager.container =this.mainContainer;
+        pageManager.dataContainer = this.dataContainer;
         pageManager.dom = dom;
         pageManager.manage = await dataManager.getPaginatableData();
         pageManager.renderData();

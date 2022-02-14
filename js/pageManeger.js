@@ -23,6 +23,7 @@ class DataItem {
 class PageManager {
     _dom = null
     _root = null;
+    _dataContainer = null;
     _pageData = null;
     _totalPages = null;
     _currentPage = null;
@@ -48,6 +49,14 @@ class PageManager {
     set container(container) {
         this._root = container;
     };
+
+    set dataContainer(dataContainer){
+        this._dataContainer = dataContainer;
+    }
+
+    get dataContainer(){
+        return this._dataContainer;
+    }
 
     get paginationEvent() {
         return this._paginationEvent;
